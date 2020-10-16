@@ -1,0 +1,263 @@
+{
+ "metadata": {
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3-final"
+  },
+  "orig_nbformat": 2,
+  "kernelspec": {
+   "name": "Python 3.7.3 64-bit",
+   "display_name": "Python 3.7.3 64-bit",
+   "metadata": {
+    "interpreter": {
+     "hash": "916dbcbb3f70747c44a77c7bcd40155683ae19c65e1c03b4aa3499c5328201f1"
+    }
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2,
+ "cells": [
+  {
+   "source": [
+    "Nesse exemplo iremos demonstrar o uso da biblioteca `NLTK`.\n",
+    "\n",
+    "Para realizar a apresentação usaremos 3 bibliotecas `nltk`, `beautifulsoup4` e a `lxml`"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "!pip3 install nltk\n",
+    "!pip3 install beautifulsoup4\n",
+    "!pip3 install lxml"
+   ]
+  },
+  {
+   "source": [
+    "Após instalar as bibliotecas, precisamos configurar a biblioteca `nltk`. \n",
+    "\n",
+    "Nesse exemplo será instalados os seguintes pacotes:\n",
+    "- averaged_perceptron_tagger\n",
+    "- floresta\n",
+    "- mac_morpho\n",
+    "- machado\n",
+    "- punkt\n",
+    "- stopwords\n",
+    "- wordnet\n",
+    "- words\n"
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "tags": [
+     "outputPrepend"
+    ]
+   },
+   "outputs": [],
+   "source": [
+    "import nltk\n",
+    "nltk.download()"
+   ]
+  },
+  {
+   "source": [
+    "Usaremos a biblioteca `urllib` para buscar um texto de uma página web."
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from urllib.request import Request, urlopen"
+   ]
+  },
+  {
+   "source": [
+    "Vamos buscar uma noticia do *Olhar Digital*."
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "link = Request('https://olhardigital.com.br/fique_seguro/noticia/iniciativa-brasileira-informara-usuarios-sobre-seguranca-digital/108766',headers={'User-Agent': 'Mozilla/5.0'})\n",
+    "pagina = urlopen(link).read().decode('utf-8', 'ignore')"
+   ]
+  },
+  {
+   "source": [
+    "Agora iremos retirar o texto através do id da `div` chamado *materia*."
+   ],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from bs4 import BeautifulSoup\n",
+    "soup = BeautifulSoup(pagina, \"html.parser\")\n",
+    "texto = soup.find(id=\"materia\").text"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.tokenize import word_tokenize\n",
+    "from nltk.tokenize import sent_tokenize"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sentencas = sent_tokenize(texto)\n",
+    "palavras = word_tokenize(texto.lower())"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.corpus import stopwords\n",
+    "from string import punctuation\n",
+    "stopwords = set(stopwords.words('portuguese') + list(punctuation))\n",
+    "palavras_sem_stopwords = [palavra for palavra in palavras if palavra not in stopwords]"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.probability import FreqDist\n",
+    "frequencia = FreqDist(palavras_sem_stopwords)"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from collections import defaultdict\n",
+    "sentencas_importantes = defaultdict(int)"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i, sentenca in enumerate(sentencas):\n",
+    "    for palavra in word_tokenize(sentenca.lower()):\n",
+    "        if palavra in frequencia:\n",
+    "            sentencas_importantes[i] += frequencia[palavra]"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from heapq import nlargest\n",
+    "idx_sentencas_importantes = nlargest(4, sentencas_importantes, sentencas_importantes.get)"
+   ]
+  },
+  {
+   "source": [],
+   "cell_type": "markdown",
+   "metadata": {}
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i in sorted(idx_sentencas_importantes):\n",
+    "    print(sentencas[i])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ]
+}
